@@ -15,7 +15,10 @@ try:
 except Exception as e:
     print(f"[!] PostgreSQL+PostGIS connection to {DATABASE_URL} failed ({e}).")
     print(f"[!] Falling back to local SQLite for metadata table operations.")
-    SQLITE_PATH = os.path.join(os.path.dirname(__file__), "..", "nexus_local.db")
+    if os.environ.get("VERCEL"):
+        SQLITE_PATH = "/tmp/nexus_local.db"
+    else:
+        SQLITE_PATH = os.path.join(os.path.dirname(__file__), "..", "nexus_local.db")
     DATABASE_URL = f"sqlite:///{SQLITE_PATH}"
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
     IS_POSTGIS_AVAILABLE = False
